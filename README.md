@@ -47,7 +47,7 @@ My repository for Data Structures &amp; Algorithms Nanodegree Program
 
 		Part B: O(n)
 ### Task4:
-O(2n)
+	O(2n)
 
 	Explanation:There is one for loop in the for iterating over lists so O(n).and some set add operations so they are O(1) and ignore them. and in the second block there is one for loop and if condition inside.		
 		Total:	O(n)+O(n)=O(2n)
