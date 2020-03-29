@@ -25,11 +25,14 @@ timeSpentOnPhone={}
 for call in calls:
 	if call[0] not in timeSpentOnPhone:
 		timeSpentOnPhone[call[0]]=int(call[3])
-	if call[1] not in timeSpentOnPhone:
-		timeSpentOnPhone[call[1]]=int(call[3])
-	if call[0] in timeSpentOnPhone:
+	# Update two if statements with if-else statements
+	# Thank for the review
+	else:
 		timeSpentOnPhone[call[0]]+=int(call[3])
-	if call[1] in timeSpentOnPhone:
+	if call[1] not in timeSpentOnPhone:
+	# Update two if statements with if-else statements
+		timeSpentOnPhone[call[1]]=int(call[3])
+	else:
 		timeSpentOnPhone[call[1]]+=int(call[3])
 number=max(timeSpentOnPhone,key=timeSpentOnPhone.get)
 print("%s spent the longest time, %d seconds, on the phone during September 2016."%(number,int(timeSpentOnPhone[number])))

@@ -16,36 +16,21 @@ with open('calls.csv', 'r') as f:
 
 
 ## Part A
-areacodes=[]
-for call in calls:
-	#print(call)
-	#break
-	if call[0].startswith("("):
-		#print(s[s.find(st)+len(st):s.rfind(e)])
-		code=call[0][call[0].index("(")+len("("):call[0].index(")")]
-		if code not in areacodes:
-			areacodes.append(code)
-	if call[0].startswith(("9","8","7")):
-		code=call[0][0:4]
-		if code not in areacodes:
-			areacodes.append(code)
-	if call[0].startswith("140"):
-		code="140"
-		if code not in areacodes:		
-			areacodes.append(code)
-	if call[1].startswith("(0"):
-		#print(s[s.find(st)+len(st):s.rfind(e)])
-		code=call[1][call[1].index("(")+len("("):call[1].index(")")]
-		if code not in areacodes:
-			areacodes.append(code)
-	if call[1].startswith(("9","8","7")):
-		code=call[1][0:4]
-		if code not in areacodes:
-			areacodes.append(code)
-	if call[1].startswith("140"):
-		code="140"
-		if code not in areacodes:		
-			areacodes.append(code)
+areacodes=set()
+total=0
+for call in calls: # for each record in calls
+	if call[0].startswith("(080)"): # Call made by fixed lines in banglore
+		total+=1  # Counting how many calls are made by fixed lines in banglore 
+		if call[1].startswith("(0"):
+			#print(s[s.find(st)+len(st):s.rfind(e)])
+			code=call[1][call[1].index("(")+len("("):call[1].index(")")]
+			areacodes.add(code)
+		if call[1].startswith(("9","8","7")):
+			code=call[1][0:4]
+			areacodes.add(code)
+		if call[1].startswith("140"):
+			code="140"
+			areacodes.add(code)
 	
 #print(len(areacodes))
 areacodes=sorted(areacodes)
@@ -54,15 +39,21 @@ print(*areacodes,sep="\n")
 
 
 # Part B
-total=len(calls)
-bcall=0
+
+
+bcall_fixed=0
 for call in calls:
 	if call[0].startswith("(080)") and call[1].startswith("(080)"):
-		bcall+=1
-#print(bcall)
+		bcall_fixed+=1
+#print(bcall_fixed)
 #print(total)
 #print(round(bcall/total,2))
-print("%.2f percent of calls from fixed lines in Bangalore are calls to other fixed lines in Bangalore."%(round(bcall/total,2)))
+print("%.2f percent of calls from fixed lines in Bangalore are calls to other fixed lines in Bangalore."%(round(bcall_fixed/total*100,2)))
+
+
+
+
+
 """
 TASK 3:
 (080) is the area code for fixed line telephones in Bangalore.

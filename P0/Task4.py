@@ -12,19 +12,19 @@ with open('calls.csv', 'r') as f:
     reader = csv.reader(f)
     calls = list(reader)
 
-numbers=[]
-telenum=[]
+numbers=set()  # Updated Lists with sets
+telenum=set()
 for text,call in zip(texts,calls):
-	numbers.append(text[0])
-	numbers.append(text[1])
-	numbers.append(call[1])
+	numbers.add(text[0])
+	numbers.add(text[1])
+	numbers.add(call[1])
 	if call[0].startswith("140"):
-		telenum.append(call[0])
+		telenum.add(call[0])
 
 for call in calls:
 	if call[0] not in numbers:
-		telenum.append(call[0])
-telenum.sort()
+		telenum.add(call[0])
+telenum=sorted(telenum)
 #print(len(numbers))
 #print(len(telenum))
 print("These numbers could be telemarketers: ")
