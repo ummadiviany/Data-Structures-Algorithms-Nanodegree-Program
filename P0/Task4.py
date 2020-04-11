@@ -12,8 +12,9 @@ with open('calls.csv', 'r') as f:
     reader = csv.reader(f)
     calls = list(reader)
 
-numbers=set()  # Updated Lists with sets
+#numbers=set()  # Updated Lists with sets
 telenum=set()
+'''
 for text,call in zip(texts,calls):
 	numbers.add(text[0])
 	numbers.add(text[1])
@@ -24,7 +25,20 @@ for text,call in zip(texts,calls):
 for call in calls:
 	if call[0] not in numbers:
 		telenum.add(call[0])
+telenum=sorted(telenum)'''
+numbers=dict()
+for call in calls:
+	numbers[call[0]]=True
+for text,call in zip(texts,calls):
+	numbers[call[1]]=False
+	numbers[text[0]]=False
+	numbers[text[1]]=False
+
+for key in numbers:
+	if numbers[key] == True:
+		telenum.add(key)	
 telenum=sorted(telenum)
+
 #print(len(numbers))
 #print(len(telenum))
 print("These numbers could be telemarketers: ")

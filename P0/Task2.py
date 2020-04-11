@@ -20,9 +20,9 @@ Print a message:
 September 2016.".
 """
 
-timeSpentOnPhone={}
+timeSpentOnPhone=dict()
 
-for call in calls:
+'''for call in calls:
 	if call[0] not in timeSpentOnPhone:
 		timeSpentOnPhone[call[0]]=int(call[3])
 	# Update two if statements with if-else statements
@@ -33,8 +33,13 @@ for call in calls:
 	# Update two if statements with if-else statements
 		timeSpentOnPhone[call[1]]=int(call[3])
 	else:
-		timeSpentOnPhone[call[1]]+=int(call[3])
+		timeSpentOnPhone[call[1]]+=int(call[3])'''
+
+for call in calls:
+    timeSpentOnPhone[call[0]] = timeSpentOnPhone.get(call[0], 0) + int(call[3])
+    timeSpentOnPhone[call[1]] = timeSpentOnPhone.get(call[1], 0) + int(call[3])
 number=max(timeSpentOnPhone,key=timeSpentOnPhone.get)
+
 print("%s spent the longest time, %d seconds, on the phone during September 2016."%(number,int(timeSpentOnPhone[number])))
 #print(max(timeSpentOnPhone))
 #print(sorted(timeSpentOnPhone,key=timeSpentOnPhone.get,reverse=True)[0])
