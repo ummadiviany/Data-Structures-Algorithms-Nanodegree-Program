@@ -8,8 +8,10 @@ def get_min_max(ints):
     if ints == []:
         return (None,None)
 
-    min=ints[0]
-    max=ints[0]
+    #min=ints[0]
+    #max=ints[0]
+    min=float("inf")
+    max=float("-inf")
     for val in ints:
         if val < min:
            min = val
