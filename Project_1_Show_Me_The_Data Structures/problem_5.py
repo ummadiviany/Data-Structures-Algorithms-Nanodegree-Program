@@ -36,7 +36,8 @@ class BlockChain:
                 node = node.next
             node.next = Block(datetime.datetime.now(), value, node.hash)
 
-# Test Case
+#------------------------------------
+# Test Case 1
 chain = BlockChain()
 chain.append('data for a')
 chain.append('data for b')
@@ -53,3 +54,33 @@ print(b.hash == c.previous_hash)
 
 print(c.data)
 # data for c
+#-----------------------------------
+# Test Case 2
+chain = BlockChain()
+chain.append('')
+chain.append(None)
+
+print(chain.head.data)
+# ''
+
+# Test Case 3
+chain = BlockChain()
+chain.append('value1')
+chain.append('value2')
+chain.append('value3')
+chain.append('value4')
+chain.append(None)
+
+print(chain.head.data)
+# value1
+
+val2 = chain.head.next
+val3 = chain.head.next.next
+val4 = chain.head.next.next.next
+print(val2.hash == val3.previous_hash)
+# True
+print(val3.hash == val4.previous_hash)
+# True
+print(val4.data)
+## value4
+

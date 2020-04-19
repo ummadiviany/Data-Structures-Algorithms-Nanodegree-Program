@@ -1,130 +1,180 @@
 import sys
 import heapq
 
-def makeFreqencies(message):
-    chars = dict()
-    for char in message:
-        if chars.get(char):
-            chars[char] += 1
-        else:
-            chars[char] = 1
-    return chars.items()
+class Huffman_Node:
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
 
-def makeTree(frequencies):
-    # frequencies: list of tuples: (frequency, letter)
-    heap = []
-    for lf in frequencies: heapq.heappush(heap, [lf])
-    while (len(heap) > 1):
-        left = heapq.heappop(heap)
-        right = heapq.heappop(heap)
-        freq0, label0 = left[0]
-        freq1, label1 = right[0]
-        node = [(freq0 + freq1, label0 + label1), left, right]
-        heapq.heappush(heap, node)
-    return heap.pop()
+    def __gt__(self, other):
+        if not other:
+            return -1
+        if not isinstance(other, Huffman_Node):
+            return -1
+        return self.freq > other.freq
 
-def makeMap(tree, map=dict(), prefix=''):
-    if (len(tree) == 1):
-        label, freq = tree[0]
-        map[label] = prefix
-    else:
-        value, left, right = tree
-        makeMap(left, map, prefix + "0")
-        makeMap(right, map, prefix + "1")
-    return map
+class Huffman_Coding:
 
-def huffman_encoding(message):
-    tree = makeTree(makeFreqencies(message))
-    map = makeMap(tree)
-    data = ''.join([ map[letter] for letter in message ])
-    return data, tree
+    def encode(self, text):
+        if text == "":
+            return "", None
+        frequency_dict = self.make_frequency_dict(text)
+        min_heap = self.min_heapify_dict(frequency_dict)
+        merged_heap = self.merge_nodes(min_heap)
+        tree = heapq.heappop(merged_heap)
+        codes = self.make_codes(tree)
+        encoded_text = self.get_encoded_text(text, codes)
+        return encoded_text, tree
 
-def huffman_decoding(data, tree):
-    codeTree = tree
-    decodedLetters = []
+    def decode(self, encoded_text, tree):
+        decoded_string = ""
 
-    for bit in data:
-        if (bit == '0'): codeTree = codeTree[1]
-        else: codeTree = codeTree[2]
+        if encoded_text == "":
+            return decoded_string
 
-        if (len(codeTree) == 1):
-            label, freq = codeTree[0]
-            decodedLetters.append(label)
-            codeTree = tree
+        current_node = tree
 
-    return ''.join(decodedLetters)
+        for char in encoded_text:
+            if char == '0':
+                current_node = current_node.left
+            else:
+                current_node = current_node.right
+            if current_node.char is not None:
+                decoded_string += current_node.char
+                current_node = tree
+        return decoded_string  
 
+    def make_frequency_dict(self, text):
+        frequency = {}
+        for char in text:
+            if not char in frequency:
+                frequency[char] = 0
+            frequency[char] += 1
+        return frequency
 
-# Test Cases
+    def min_heapify_dict(self, frequency):
+        heap = []
+        for key in frequency:
+            node = Huffman_Node(key, frequency[key])
+            heapq.heappush(heap, node)
+        return heap
+
+    def merge_nodes(self, heap):
+        if len(heap) == 1:
+            node = heapq.heappop(heap)
+            new_node = Huffman_Node(None, node.freq)
+            new_node.left = node
+            heapq.heappush(heap, new_node)
+        while len(heap) > 1:
+            node1 = heapq.heappop(heap)
+            node2 = heapq.heappop(heap)
+
+            new_node = Huffman_Node(None, node1.freq + node2.freq)
+            new_node.left = node1
+            new_node.right = node2
+
+            heapq.heappush(heap, new_node)
+        return heap
+
+    def make_codes(self, tree):
+        if tree.left is None and tree.right is None:
+            return {tree.char:'0'}
+        return self.make_codes_recursive(tree, "")
+
+    def make_codes_recursive(self, root, current_code):
+        codes = {}
+
+        if root is None:
+            return {}
+
+        if root.char is not None:
+            codes[root.char] = current_code
+        
+        codes.update(self.make_codes_recursive(root.left, current_code + "0"))
+        codes.update(self.make_codes_recursive(root.right, current_code + "1"))
+        return codes
+
+    def get_encoded_text(self, text, codes):
+        encoded_text = ""
+        for char in text:
+            encoded_text += codes[char]
+        return encoded_text
+
 if __name__ == "__main__":
-    codes = {}
+    huffman_coding = Huffman_Coding()
 
-    a_great_sentence = "The bird is the word"
-    print ("The size of the data is: {}\n".format(sys.getsizeof(a_great_sentence)))
-    print ("The content of the data is: {}\n".format(a_great_sentence))
-    encoded_data, tree = huffman_encoding(a_great_sentence)
+    print("**** Test 1 ****\nRegular Sentence\n")
+    test_sentence = "The bird is the word"
+
+    print ("The size of the data is: {}\n".format(sys.getsizeof(test_sentence)))
+    print ("The content of the data is: {}\n".format(test_sentence))
+
+    encoded_data, tree = huffman_coding.encode(test_sentence)
+
     print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
     print ("The content of the encoded data is: {}\n".format(encoded_data))
-    decoded_data = huffman_decoding(encoded_data, tree)
+
+    decoded_data = huffman_coding.decode(encoded_data, tree)
+
     print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
     print ("The content of the encoded data is: {}\n".format(decoded_data))
 
-    print("-------------------------------")
-    a_long_sentence = "a man, a plan, a canal, panama."
-    print ("The content of the data is: {}\n".format(a_long_sentence))
-    print ("The size of the data is: {}\n".format(sys.getsizeof(a_long_sentence)))
-    encoded_data, tree = huffman_encoding(a_long_sentence)
-    print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
-    print ("The content of the encoded data is: {}\n".format(encoded_data))
-    decoded_data = huffman_decoding(encoded_data, tree)
-    print ("The content of the encoded data is: {}\n".format(decoded_data))
-    print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
 
-    print("-------------------------------")
-    a_short_sentence = "aaaaab"
-    print ("The content of the data is: {}\n".format(a_short_sentence))
-    print ("The size of the data is: {}\n".format(sys.getsizeof(a_short_sentence)))
-    encoded_data, tree = huffman_encoding(a_short_sentence)
-    print ("The content of the encoded data is: {}\n".format(encoded_data))
+    print("**** Test 2 ****\nSingle Character\n")
+    test_sentence = "a"
+
+    print ("The size of the data is: {}\n".format(sys.getsizeof(test_sentence)))
+    print ("The content of the data is: {}\n".format(test_sentence))
+
+    encoded_data, tree = huffman_coding.encode(test_sentence)
+
     print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
-    decoded_data = huffman_decoding(encoded_data, tree)
-    print ("The content of the encoded data is: {}\n".format(decoded_data))
+    print ("The content of the encoded data is: {}\n".format(encoded_data))
+
+    decoded_data = huffman_coding.decode(encoded_data, tree)
+
     print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
-# Test Case
-# The size of the data is: 69
-#
-# The content of the data is: The bird is the word
-#
-# The size of the encoded data is: 44
-#
-# The content of the encoded data is: 000000000010000001000000010000000000000000000010000010001000000001000000000000000010010000000000001000000100000001000000000001000010001000000001
-#
-# The size of the decoded data is: 69
-#
-# The content of the encoded data is: The bird is the word
-#
-# -------------------------------
-# The content of the data is: a man, a plan, a canal, panama.
-#
-# The size of the data is: 80
-#
-# The size of the encoded data is: 48
-#
-# The content of the encoded data is: 000001000000000010000010100000001000000000000010000000010001000001010000000100000000000001000000000000100000101000001000100000001000000001000001010000010010000010000001
-#
-# The content of the encoded data is: a man, a plan, a canal, panama.
-#
-# The size of the decoded data is: 80
-#
-# -------------------------------
-# The content of the data is: aaaaab
-#
-# The size of the data is: 55
-#
-# The content of the encoded data is: 000001
-#
-# The size of the encoded data is: 28
-#
-# The content of the encoded data is: aaaaab
-#
-# The size of the decoded data is: 55   
+    print ("The content of the encoded data is: {}\n".format(decoded_data))
+
+
+    print("**** Test 3 ****\nSingle Character Repeated\n")
+    test_sentence = "aaaaaaa"
+
+    print ("The size of the data is: {}\n".format(sys.getsizeof(test_sentence)))
+    print ("The content of the data is: {}\n".format(test_sentence))
+
+    encoded_data, tree = huffman_coding.encode(test_sentence)
+
+    print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
+    print ("The content of the encoded data is: {}\n".format(encoded_data))
+
+    decoded_data = huffman_coding.decode(encoded_data, tree)
+
+    print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
+    print ("The content of the encoded data is: {}\n".format(decoded_data))
+
+
+    print("**** Test 4 ****\nSame Letter, Different Case\n")
+    test_sentence = "aaAAbbBB"
+
+    print ("The size of the data is: {}\n".format(sys.getsizeof(test_sentence)))
+    print ("The content of the data is: {}\n".format(test_sentence))
+
+    encoded_data, tree = huffman_coding.encode(test_sentence)
+
+    print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
+    print ("The content of the encoded data is: {}\n".format(encoded_data))
+
+    decoded_data = huffman_coding.decode(encoded_data, tree)
+
+    print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
+    print ("The content of the encoded data is: {}\n".format(decoded_data))
+
+    print ("The size of the data is: {}\n".format(sys.getsizeof(test_sentence)))
+    print ("The content of the data is: {}\n".format(test_sentence))
+
+    encoded_data, tree = huffman_coding.encode(test_sentence)
+
+    decoded_data = huffman_coding.decode(encoded_data, tree)
