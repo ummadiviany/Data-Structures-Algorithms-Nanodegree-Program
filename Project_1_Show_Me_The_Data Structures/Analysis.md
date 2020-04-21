@@ -13,15 +13,17 @@ Coming to the time complexity is dependns on the depth of the recursion(The leaf
 
 ## Problem 3: Huffman Coding
 
-For this Huffman Coding problem I decided to use a min heap to allow for easy merging of the frequency nodes. I used Pythons heapq library to make the addition and removal of nodes easier.
+The implementation of the Huffmann Algorithm, has consisted as pseudo code tasks were resolved, in the construction of several classes, being:
 
-The time complexity of encode() is `O(nlogn)` Reason: make_frequency_dict takes` O(n)` time, min_heapify_dict takes `O(n)` time, merge_nodes takes `O(logn)`, make_codes takes `O(n)`, get_encoded_text takes `O(n)`. These all result in a complexity of nlogn
+    Node
+    Queue
+    Tree
+    HuffmanEncoder
 
-The space complexity of encode() is `O(n)` Reason: n is the size of the string. There is a linear space complexity.
+This has allowed to have a more encapsulated development, as well as, providing the project with a more consistent structure. The compresing algorithm has shown, for the tested example a reduction of almost 50% of its size.
 
-The time complexity of decode() is `O(n)` Reason: There is a for loop going through each character in the encoded_text
 
-The space complexity of decode() is `O(1)` Reason: Only one variable is allocated
+In respects to the study of the time complexity, would be O(Ln), being L the maximum length of a codeword; If I had not used a built it function for sorting the input that takes `O(n*log(n))`; ending up the time complexity being `O(n*log(n))`. In respects to the space complexity, it is directly related to the size of the employed alphabet, in this case k, resulting in `O(k)`.
 
 
 ## Problem 4: Active Directory
